@@ -1,0 +1,12 @@
+# Secrets — NEVER upload these
+.env
+token.json
+
+# Auto-generated data
+hn_daily_archive.json
+subscribers.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
