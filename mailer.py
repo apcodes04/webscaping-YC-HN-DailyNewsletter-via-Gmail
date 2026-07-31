@@ -19,13 +19,23 @@ from supabase_db import db_add_subscriber, db_remove_subscriber  # ← Supabase 
 
 load_dotenv()
 
-SENDER_EMAIL  = (os.getenv("SENDER_EMAIL") or "").strip()
-APP_PASSWORD  = (os.getenv("APP_PASSWORD") or "").strip()
+def _get_env_val(key, default=""):
+    val = os.getenv(key)
+    if not val:
+        try:
+            import streamlit as st
+            val = st.secrets.get(key, default)
+        except Exception:
+            val = default
+    return (val or "").strip()
+
+SENDER_EMAIL  = _get_env_val("SENDER_EMAIL")
+APP_PASSWORD  = _get_env_val("APP_PASSWORD")
 ARCHIVE_FILE  = "hn_daily_archive.json"
 SUB_FILE      = "subscribers.json"
 
 # Base URL of your deployed Streamlit app — update after deploying
-STREAMLIT_URL = os.getenv("STREAMLIT_URL", "http://localhost:8501")
+STREAMLIT_URL = _get_env_val("STREAMLIT_URL", "http://localhost:8501")
 
 
 # ── Subscriber helpers ────────────────────────────────────────────────────────
@@ -260,8 +270,8 @@ def build_welcome_html(email, send_time):
 def _send(to_email, subject, html_body):
     """Core SMTP send — used by both welcome and newsletter senders."""
     load_dotenv(override=True)
-    sender = (os.getenv("SENDER_EMAIL") or "").strip()
-    password = (os.getenv("APP_PASSWORD") or "").strip()
+    sender = _get_env_val("SENDER_EMAIL")
+    password = _get_env_val("APP_PASSWORD")
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject

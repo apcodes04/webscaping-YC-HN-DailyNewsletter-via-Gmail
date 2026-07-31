@@ -19,10 +19,18 @@ if hasattr(sys.stderr, 'reconfigure'):
     except Exception:
         pass
 
-load_dotenv()
+def _get_env_val(key, default=""):
+    val = os.getenv(key)
+    if not val:
+        try:
+            import streamlit as st
+            val = st.secrets.get(key, default)
+        except Exception:
+            val = default
+    return (val or "").strip()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://yritfdwfszqinxrdhnut.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+SUPABASE_URL = _get_env_val("SUPABASE_URL", "https://yritfdwfszqinxrdhnut.supabase.co")
+SUPABASE_KEY = _get_env_val("SUPABASE_KEY", "")
 
 TABLE = "YC_Webscraped"
 
